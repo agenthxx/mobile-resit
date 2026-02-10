@@ -10,9 +10,22 @@
 		D15C1D3A2F38704C000B8672 /* personality.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = personality.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		50FB52BB2F3B0C1B002B87D7 /* Exceptions for "personality" folder in "personality" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D15C1D392F38704C000B8672 /* personality */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D15C1D3C2F38704C000B8672 /* personality */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				50FB52BB2F3B0C1B002B87D7 /* Exceptions for "personality" folder in "personality" target */,
+			);
 			path = personality;
 			sourceTree = "<group>";
 		};
