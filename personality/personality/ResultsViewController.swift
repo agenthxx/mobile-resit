@@ -13,9 +13,12 @@ class ResultsViewController: UIViewController {
     @IBOutlet weak var resultDefinitionLabel: UILabel!
     
     var responses: [Answer]
+    var quizTitle: String
+
     
-    init?(coder: NSCoder, responses: [Answer]) {
+    init?(coder: NSCoder, responses: [Answer], quizTitle: String) {
         self.responses = responses
+        self.quizTitle = quizTitle
         super.init(coder: coder)
     }
     
@@ -25,11 +28,13 @@ class ResultsViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        calculatePersonalityResult()
+
+        navigationItem.title = "\(quizTitle) Results"
         navigationItem.hidesBackButton = true
-        // Do any additional setup after loading the view.
+
+        calculatePersonalityResult()
     }
-    
+
     func calculatePersonalityResult() {
         let frequencyOfAnswers = responses.reduce(into: [PersonalityType:Int]()) { (counts, answer) in
             if let existingCount = counts[answer.type] {
@@ -39,13 +44,23 @@ class ResultsViewController: UIViewController {
             }
         }
         
-        let frequentAnswersSorted = frequencyOfAnswers.sorted(by: { (pair1, pair2) in return pair1.value > pair2.value
+        _ = frequencyOfAnswers.sorted(by: { (pair1, pair2) in return pair1.value > pair2.value
         })
         
         let mostCommonAnswer = frequencyOfAnswers.sorted {$0.1 > $1.1}.first!.key
         
         resultAnswerLabel.text = "You are a \(mostCommonAnswer.rawValue)!"
         resultDefinitionLabel.text = mostCommonAnswer.definition
+        
+        let resultPersonalityQuiz = mostCommonAnswer.rawValue
+        let historyItem = QuizHistoryItem(
+            quizTitle: quizTitle,
+            result: resultPersonalityQuiz,
+            date: Date()
+        )
+
+        QuizHistoryStore.save(historyItem)
+        print("SAVED HISTORY:", QuizHistoryStore.load())
     }
 
     /*

@@ -8,16 +8,19 @@
 import Foundation
 
 struct Quiz {
+    let title: String
     let questions: [Question]
 }
 
 let animalQuiz = Quiz(
+    title: "Animal Personaility",
     questions: [
         Question(text: "Which food do you like the most?", type: .single, answers: [
             Answer(text: "Steak", type: .lion),
             Answer(text: "Fish", type: .turtle),
             Answer(text: "Eggs", type: .rabbit),
-            Answer(text: "Cheese", type: .cat)
+            Answer(text: "Cheese", type: .cat),
+            Answer(text: "Fruit", type: .turtle)
         ]),
         Question(text: "Which activities do you enjoy?", type: .multiple, answers: [
             Answer(text: "Swimming", type: .turtle),
@@ -35,6 +38,7 @@ let animalQuiz = Quiz(
 )
 
 let socialQuiz = Quiz(
+    title: "Social Personaility",
     questions: [
         Question(text: "What is your favorite way to spend free time?", type: .single, answers: [
             Answer(text: "Reading a book", type: .introvert),
@@ -58,6 +62,7 @@ let socialQuiz = Quiz(
 )
 
 let careerQuiz = Quiz(
+    title: "Career Personaility",
     questions: [
         Question(text: "Which work environment suits you best?", type: .single, answers: [
             Answer(text: "Quiet office", type: .analytical),

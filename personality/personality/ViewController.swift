@@ -34,6 +34,7 @@ class ViewController: UIViewController {
            let quiz = selectedQuiz,
            let questionVC = segue.destination as? QuestionViewController {
 
+            questionVC.quizTitle = quiz.title
             questionVC.questions = quiz.questions
         }
     }

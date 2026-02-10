@@ -10,91 +10,79 @@ import UIKit
 class QuestionViewController: UIViewController {
     
     @IBOutlet weak var questionLabel: UILabel!
-    
     @IBOutlet weak var singleStackView: UIStackView!
-    @IBOutlet weak var singleButton1: UIButton!
-    @IBOutlet weak var singleButton2: UIButton!
-    @IBOutlet weak var singleButton3: UIButton!
-    @IBOutlet weak var singleButton4: UIButton!
-    
     @IBOutlet weak var multipleStackView: UIStackView!
-    @IBOutlet weak var multiLabel1: UILabel!
-    @IBOutlet weak var multiLabel2: UILabel!
-    @IBOutlet weak var multiLabel3: UILabel!
-    @IBOutlet weak var multiLabel4: UILabel!
-    
-    @IBOutlet weak var multiSwith1: UISwitch!
-    @IBOutlet weak var multiSwith2: UISwitch!
-    @IBOutlet weak var multiSwith3: UISwitch!
-    @IBOutlet weak var multiSwith4: UISwitch!
-    
+    @IBOutlet weak var multiSubmitButton: UIButton!
     @IBOutlet weak var rangedStackView: UIStackView!
     @IBOutlet weak var rangedLabel1: UILabel!
     @IBOutlet weak var rangedLabel2: UILabel!
-    
     @IBOutlet weak var rangedSlider: UISlider!
-    
     @IBOutlet weak var questionProgressView: UIProgressView!
+    @IBOutlet weak var timerLabel: UILabel!
     
+    var timer: Timer?
+    let timePerQuestion: Int = 10
+    var timeRemaining: Int = 10
+
     var questionIndex = 0
-    var answerChosen : [Answer] = []
+    var quizTitle = ""
+    var answerChosen: [Answer] = []
     var questions: [Question] = []
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        guard !questions.isEmpty else { return }
+        
+        // Shuffle questions
         questions.shuffle()
+        
+        // Shuffle answers for single/multiple questions only
+        for i in 0..<questions.count {
+            if questions[i].type != .ranged {
+                questions[i].answers.shuffle()
+            }
+        }
+        
         updateUI()
     }
     
-    @IBAction func singleAnswerButtonPressed(_ sender: UIButton) {
+    // MARK: - Answer Handlers
+    
+    @objc func singleAnswerButtonPressed(_ sender: UIButton) {
+        timer?.invalidate()
         let currentAnswers = questions[questionIndex].answers
-        
-        switch sender {
-        case singleButton1:
-            answerChosen.append(currentAnswers[0])
-        case singleButton2:
-            answerChosen.append(currentAnswers[1])
-        case singleButton3:
-            answerChosen.append(currentAnswers[2])
-        case singleButton4:
-            answerChosen.append(currentAnswers[3])
-        default:
-            break
-        }
-        
+        let selectedIndex = sender.tag
+        answerChosen.append(currentAnswers[selectedIndex])
         nextQuestion()
     }
     
     @IBAction func multipleAnswerButtonPressed() {
+        timer?.invalidate()
         let currentAnswers = questions[questionIndex].answers
         
-        if multiSwith1.isOn {
-            answerChosen.append(currentAnswers[0])
+        for case let horizontalStack as UIStackView in multipleStackView.arrangedSubviews {
+            if let toggle = horizontalStack.arrangedSubviews.compactMap({ $0 as? UISwitch }).first,
+               toggle.isOn {
+                let index = toggle.tag
+                answerChosen.append(currentAnswers[index])
+            }
         }
-        if multiSwith2.isOn {
-            answerChosen.append(currentAnswers[1])
-        }
-        if multiSwith3.isOn {
-            answerChosen.append(currentAnswers[2])
-        }
-        if multiSwith4.isOn {
-            answerChosen.append(currentAnswers[3])
-        }
-        
-        nextQuestion()
-    }
-    @IBAction func rangedAnswerButtonPressed() {
-        let currentAnswers = questions[questionIndex].answers
-        let index = Int(round(rangedSlider.value * Float(currentAnswers.count - 1)))
-        
-        answerChosen.append(currentAnswers[index])
-        
         nextQuestion()
     }
     
+    @IBAction func rangedAnswerButtonPressed() {
+        timer?.invalidate()
+        let currentAnswers = questions[questionIndex].answers
+        let index = Int(round(rangedSlider.value * Float(currentAnswers.count - 1)))
+        answerChosen.append(currentAnswers[index])
+        nextQuestion()
+    }
+    
+    // MARK: - Navigation
+    
     func nextQuestion() {
+        timer?.invalidate()
         questionIndex += 1
-        
         if questionIndex < questions.count {
             updateUI()
         } else {
@@ -103,16 +91,21 @@ class QuestionViewController: UIViewController {
     }
     
     @IBSegueAction func showResults(_ coder: NSCoder) -> ResultsViewController? {
-        return ResultsViewController(coder: coder, responses: answerChosen)
+        return ResultsViewController(coder: coder, responses: answerChosen, quizTitle: quizTitle)
     }
     
+    // MARK: - Update UI
+    
     func updateUI() {
+        guard questionIndex < questions.count else { return }
+        
+        // Hide all stacks initially
         singleStackView.isHidden = true
         multipleStackView.isHidden = true
         rangedStackView.isHidden = true
+        multiSubmitButton.isHidden = true
         
         let currentQuestion = questions[questionIndex]
-        let currentAnswers = currentQuestion.answers
         let totalProgress = Float(questionIndex) / Float(questions.count)
         
         navigationItem.title = "Question #\(questionIndex + 1)"
@@ -121,32 +114,60 @@ class QuestionViewController: UIViewController {
         
         switch currentQuestion.type {
         case .single:
-            updateSingleStack(using: currentAnswers.shuffled())
+            updateSingleStack(using: currentQuestion.answers)
         case .multiple:
-            updateMultipleStack(using: currentAnswers.shuffled())
+            updateMultipleStack(using: currentQuestion.answers)
         case .ranged:
-            updateRangeStack(using: currentAnswers)
+            updateRangeStack(using: currentQuestion.answers)
         }
+        startTimer()
     }
-
+    
+    // MARK: - Dynamic UI Builders
+    
     func updateSingleStack(using answers: [Answer]) {
         singleStackView.isHidden = false
-        singleButton1.setTitle(answers[0].text, for: .normal)
-        singleButton2.setTitle(answers[1].text, for: .normal)
-        singleButton3.setTitle(answers[2].text, for: .normal)
-        singleButton4.setTitle(answers[3].text, for: .normal)
+        singleStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        for (index, answer) in answers.enumerated() {
+            let button = UIButton(type: .system)
+            button.setTitle(answer.text, for: .normal)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 18)
+            button.tag = index
+            button.addTarget(self, action: #selector(singleAnswerButtonPressed(_:)), for: .touchUpInside)
+            
+            button.backgroundColor = .systemBlue
+            button.setTitleColor(.white, for: .normal)
+            button.layer.cornerRadius = 8
+            button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+            
+            singleStackView.addArrangedSubview(button)
+        }
     }
     
     func updateMultipleStack(using answers: [Answer]) {
         multipleStackView.isHidden = false
-        multiSwith1.isOn = false
-        multiSwith2.isOn = false
-        multiSwith3.isOn = false
-        multiSwith4.isOn = false
-        multiLabel1.text = answers[0].text
-        multiLabel2.text = answers[1].text
-        multiLabel3.text = answers[2].text
-        multiLabel4.text = answers[3].text
+        multiSubmitButton.isHidden = false
+        multipleStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        for (index, answer) in answers.enumerated() {
+            let horizontalStack = UIStackView()
+            horizontalStack.axis = .horizontal
+            horizontalStack.spacing = 8
+            horizontalStack.alignment = .center
+            
+            let label = UILabel()
+            label.text = answer.text
+            label.font = UIFont.systemFont(ofSize: 18)
+            
+            let toggle = UISwitch()
+            toggle.tag = index
+            
+            horizontalStack.addArrangedSubview(label)
+            horizontalStack.addArrangedSubview(toggle)
+            
+            multipleStackView.addArrangedSubview(horizontalStack)
+        }
     }
     
     func updateRangeStack(using answers: [Answer]) {
@@ -155,14 +176,33 @@ class QuestionViewController: UIViewController {
         rangedLabel1.text = answers.first?.text
         rangedLabel2.text = answers.last?.text
     }
-    /*
-    // MARK: - Navigation
+    
+    func startTimer() {
+        timer?.invalidate()
+        timeRemaining = timePerQuestion
+        updateTimerLabel()
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        timer = Timer.scheduledTimer(
+            timeInterval: 1.0,
+            target: self,
+            selector: #selector(timerTick),
+            userInfo: nil,
+            repeats: true
+        )
     }
-    */
+
+    @objc func timerTick() {
+        timeRemaining -= 1
+        updateTimerLabel()
+
+        if timeRemaining <= 0 {
+            timer?.invalidate()
+            nextQuestion() // auto move on
+        }
+    }
+
+    func updateTimerLabel() {
+        timerLabel.text = "Time left: \(timeRemaining)s"
+    }
 
 }
