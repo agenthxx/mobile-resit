@@ -108,6 +108,25 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate, UISearch
 
         cell.titleOfTodo?.text = toDo.title
         cell.isCompletedButton.isSelected = toDo.isComplete
+
+        // Highlight overdue/upcoming
+        let now = Date()
+        if !toDo.isComplete {
+            if toDo.dueDate < now {
+                // Overdue → red text
+                cell.titleOfTodo?.textColor = .systemRed
+            } else if Calendar.current.isDateInToday(toDo.dueDate) {
+                // Due today → orange text
+                cell.titleOfTodo?.textColor = .systemOrange
+            } else {
+                // Upcoming → default
+                cell.titleOfTodo?.textColor = .label
+            }
+        } else {
+            // Completed → gray text
+            cell.titleOfTodo?.textColor = .systemGray
+        }
+
         return cell
     }
 
