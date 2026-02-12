@@ -150,6 +150,7 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate, UISearch
             if let index = toDos.firstIndex(where: { $0.id == toDo.id }) {
                 toDos.remove(at: index)
             }
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [toDo.id.uuidString])
 
             ToDo.saveToDos(toDos)
             tableView.reloadData()   // reload whole table

@@ -160,12 +160,38 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="vL4-a3-ji8">
+                                        <rect key="frame" x="0.0" y="150.66666793823242" width="393" height="47.666667938232422"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="vL4-a3-ji8" id="C3a-fD-nzD">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="47.666667938232422"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" title="Reminder" translatesAutoresizingMaskIntoConstraints="NO" id="8jF-vp-Qfo">
+                                                    <rect key="frame" x="324" y="8.3333333333333357" width="51" height="31"/>
+                                                </switch>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Reminder For ToDo:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7sz-33-Gx8">
+                                                    <rect key="frame" x="20" y="12.333333333333336" width="284" height="23"/>
+                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="19"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="8jF-vp-Qfo" firstAttribute="leading" secondItem="7sz-33-Gx8" secondAttribute="trailing" constant="20" id="Dqu-ti-f7n"/>
+                                                <constraint firstItem="7sz-33-Gx8" firstAttribute="leading" secondItem="C3a-fD-nzD" secondAttribute="leading" constant="20" id="UeP-su-uPO"/>
+                                                <constraint firstAttribute="trailing" secondItem="8jF-vp-Qfo" secondAttribute="trailing" constant="20" id="eNQ-of-wgt"/>
+                                                <constraint firstItem="7sz-33-Gx8" firstAttribute="centerY" secondItem="C3a-fD-nzD" secondAttribute="centerY" id="n6P-eF-imC"/>
+                                                <constraint firstItem="8jF-vp-Qfo" firstAttribute="centerY" secondItem="C3a-fD-nzD" secondAttribute="centerY" id="orG-V8-JRb"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="" id="9Rd-Gj-YIo">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="e3z-j8-bMm" detailTextLabel="dxC-xN-V10" style="IBUITableViewCellStyleValue1" id="WyC-jE-JiU">
-                                        <rect key="frame" x="0.0" y="189" width="393" height="43.666667938232422"/>
+                                        <rect key="frame" x="0.0" y="236.66666793823242" width="393" height="43.666667938232422"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="WyC-jE-JiU" id="sT4-GG-lXk">
                                             <rect key="frame" x="0.0" y="0.0" width="393" height="43.666667938232422"/>
@@ -189,7 +215,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="t1p-if-Fhz">
-                                        <rect key="frame" x="0.0" y="232.66666793823242" width="393" height="216.33332824707031"/>
+                                        <rect key="frame" x="0.0" y="280.33333587646484" width="393" height="216.33332824707031"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="t1p-if-Fhz" id="fl8-2j-46L">
                                             <rect key="frame" x="0.0" y="0.0" width="393" height="216.33332824707031"/>
@@ -215,7 +241,7 @@
                             <tableViewSection headerTitle="Notes" id="psw-hF-BJ2">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="200" id="jo6-Ee-Cjp">
-                                        <rect key="frame" x="0.0" y="504.99999618530273" width="393" height="200"/>
+                                        <rect key="frame" x="0.0" y="552.66666412353516" width="393" height="200"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="jo6-Ee-Cjp" id="CbE-Y0-URh">
                                             <rect key="frame" x="0.0" y="0.0" width="393" height="200"/>
@@ -270,6 +296,7 @@
                         <outlet property="dueDateLabel" destination="dxC-xN-V10" id="7TB-vd-vPA"/>
                         <outlet property="isCompleteButton" destination="plU-Ev-6Pa" id="2J7-43-m6Z"/>
                         <outlet property="notesTextView" destination="D5h-YJ-1GL" id="cVD-uE-Y10"/>
+                        <outlet property="reminderSwitch" destination="8jF-vp-Qfo" id="6a4-dx-PM1"/>
                         <outlet property="saveButton" destination="bY0-9y-OJP" id="5Fq-Xt-ETa"/>
                         <outlet property="titleTextField" destination="Trg-Du-1dt" id="1Yi-8Q-beU"/>
                     </connections>

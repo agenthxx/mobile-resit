@@ -29,6 +29,7 @@ class ToDoDetailTableViewController: UITableViewController,MFMailComposeViewCont
     @IBOutlet weak var saveButton: UIBarButtonItem!
     
     @IBOutlet weak var categorySegmentedControl: UISegmentedControl!
+    @IBOutlet weak var reminderSwitch: UISwitch!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,7 +88,7 @@ class ToDoDetailTableViewController: UITableViewController,MFMailComposeViewCont
         super.prepare(for: segue, sender: sender)
 
         guard segue.identifier == "saveUnwind" else { return }
-
+        let wantsReminder = reminderSwitch.isOn
         let title = titleTextField.text!
         let isComplete = isCompleteButton.isSelected
         let dueDate = dueDateDatePicker.date
@@ -107,6 +108,30 @@ class ToDoDetailTableViewController: UITableViewController,MFMailComposeViewCont
                         dueDate: dueDate,
                         notes: notes,
                         category: category)
+        }
+        if reminderSwitch.isOn {
+            scheduleNotification(for: toDo!)
+        }
+    }
+
+    func scheduleNotification(for toDo: ToDo) {
+        let content = UNMutableNotificationContent()
+        content.title = "Reminder"
+        content.body = "Your to-do '\(toDo.title)' is due now!"
+        content.sound = .default
+
+        let triggerDate = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute],
+                                                          from: toDo.dueDate)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+
+        let request = UNNotificationRequest(identifier: toDo.id.uuidString,
+                                            content: content,
+                                            trigger: trigger)
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("❌ Notification error: \(error)")
+            }
         }
     }
 
