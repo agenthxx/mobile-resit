@@ -7,12 +7,17 @@
 
 import UIKit
 
-class ToDoTableViewController: UITableViewController, ToDoCellDelegate {
+class ToDoTableViewController: UITableViewController, ToDoCellDelegate, UISearchBarDelegate {
     
-    var toDos = [ToDo]()
+    @IBOutlet weak var searchBar: UISearchBar!
     
+    var toDos: [ToDo] = []
+    var filteredToDos: [ToDo] = []
+    var isSearching = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        searchBar.delegate = self
         
         if let savedToDos = ToDo.loadToDos() {
             toDos = savedToDos
@@ -24,6 +29,17 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate {
         // self.clearsSelectionOnViewWillAppear = false
 
         navigationItem.leftBarButtonItem = editButtonItem
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            isSearching = false
+            tableView.reloadData()
+        } else {
+            isSearching = true
+            filteredToDos = toDos.filter { $0.title.lowercased().contains(searchText.lowercased()) }
+            tableView.reloadData()
+        }
     }
 
     func checkmarkTapped(sender: ToDoCell) {
@@ -53,14 +69,14 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return toDos.count
+        return isSearching ? filteredToDos.count : toDos.count
     }
 
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell( withIdentifier: "ToDoCellIdentifier", for: indexPath) as! ToDoCell
         cell.delegate = self
-        let toDo = toDos[indexPath.row]
+        let toDo = isSearching ? filteredToDos[indexPath.row] : toDos[indexPath.row]
         cell.titleOfTodo?.text = toDo.title
         cell.isCompletedButton.isSelected = toDo.isComplete
         return cell
