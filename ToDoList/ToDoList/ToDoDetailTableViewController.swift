@@ -28,6 +28,8 @@ class ToDoDetailTableViewController: UITableViewController,MFMailComposeViewCont
     
     @IBOutlet weak var saveButton: UIBarButtonItem!
     
+    @IBOutlet weak var categorySegmentedControl: UISegmentedControl!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let currentDueDate: Date
@@ -38,9 +40,15 @@ class ToDoDetailTableViewController: UITableViewController,MFMailComposeViewCont
             isCompleteButton.isSelected = toDo.isComplete
             currentDueDate = toDo.dueDate
             notesTextView.text = toDo.notes
+
+            // ✅ set category segmented control
+            if let index = ToDoCategory.allCases.firstIndex(of: toDo.category) {
+                categorySegmentedControl.selectedSegmentIndex = index
+            }
         } else {
             navigationItem.title = "New To-Do"
-            currentDueDate = Date().addingTimeInterval(24 * 60 * 60) // default: tomorrow
+            currentDueDate = Date().addingTimeInterval(24 * 60 * 60)
+            categorySegmentedControl.selectedSegmentIndex = 0 // default to Work
         }
 
         dueDateDatePicker.date = currentDueDate
@@ -84,17 +92,21 @@ class ToDoDetailTableViewController: UITableViewController,MFMailComposeViewCont
         let isComplete = isCompleteButton.isSelected
         let dueDate = dueDateDatePicker.date
         let notes = notesTextView.text
-        
+        let selectedCategoryIndex = categorySegmentedControl.selectedSegmentIndex
+        let category = ToDoCategory.allCases[selectedCategoryIndex]
+
         if toDo != nil {
             toDo?.title = title
             toDo?.isComplete = isComplete
             toDo?.dueDate = dueDate
             toDo?.notes = notes
+            toDo?.category = category
         } else {
             toDo = ToDo(title: title,
                         isComplete: isComplete,
                         dueDate: dueDate,
-                        notes: notes)
+                        notes: notes,
+                        category: category)
         }
     }
 

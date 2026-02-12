@@ -44,44 +44,73 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate, UISearch
 
     func checkmarkTapped(sender: ToDoCell) {
         if let indexPath = tableView.indexPath(for: sender) {
-            var toDo = toDos[indexPath.row]
+            let category = ToDoCategory.allCases[indexPath.section]
+            var categoryItems = toDos.filter { $0.category == category }
+            var toDo = categoryItems[indexPath.row]
+
+            // Toggle completion
             toDo.isComplete.toggle()
-            toDos[indexPath.row] = toDo
-            tableView.reloadRows(at: [indexPath], with: .automatic)
+
+            // Update in master list
+            if let index = toDos.firstIndex(where: { $0.id == toDo.id }) {
+                toDos[index] = toDo
+            }
+
+            ToDo.saveToDos(toDos)
+            tableView.reloadData()   // reload whole table to avoid section mismatch
         }
-        ToDo.saveToDos(toDos)
     }
+    
     @IBSegueAction func editToDo_sender(_ coder: NSCoder, sender: Any?) -> ToDoDetailTableViewController? {
         let detailController = ToDoDetailTableViewController(coder: coder)
 
         guard let cell = sender as? UITableViewCell,
               let indexPath = tableView.indexPath(for: cell) else {
-            // If sender is the Add button, return an empty controller
             return detailController
         }
 
         tableView.deselectRow(at: indexPath, animated: true)
-        detailController?.toDo = toDos[indexPath.row]
+
+        let category = ToDoCategory.allCases[indexPath.section]
+        let items = isSearching ? filteredToDos : toDos
+        let categoryItems = items.filter { $0.category == category }
+        let toDo = categoryItems[indexPath.row]
+
+        detailController?.toDo = toDo
         return detailController
     }
     
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return ToDoCategory.allCases.count
+    }
+
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return ToDoCategory.allCases[section].rawValue
+    }
+
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return isSearching ? filteredToDos.count : toDos.count
+        let category = ToDoCategory.allCases[section]
+        let items = isSearching ? filteredToDos : toDos
+        return items.filter { $0.category == category }.count
     }
 
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell( withIdentifier: "ToDoCellIdentifier", for: indexPath) as! ToDoCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoCellIdentifier", for: indexPath) as! ToDoCell
         cell.delegate = self
-        let toDo = isSearching ? filteredToDos[indexPath.row] : toDos[indexPath.row]
+
+        let category = ToDoCategory.allCases[indexPath.section]
+        let items = isSearching ? filteredToDos : toDos
+        let categoryItems = items.filter { $0.category == category }
+        let toDo = categoryItems[indexPath.row]
+
         cell.titleOfTodo?.text = toDo.title
         cell.isCompletedButton.isSelected = toDo.isComplete
         return cell
     }
-    
+
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
@@ -91,11 +120,20 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate, UISearch
 
     
     // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView,
+                            commit editingStyle: UITableViewCell.EditingStyle,
+                            forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-        toDos.remove(at: indexPath.row)
-        tableView.deleteRows(at: [indexPath], with: .automatic)
+            let category = ToDoCategory.allCases[indexPath.section]
+            let categoryItems = toDos.filter { $0.category == category }
+            let toDo = categoryItems[indexPath.row]
+
+            if let index = toDos.firstIndex(where: { $0.id == toDo.id }) {
+                toDos.remove(at: index)
+            }
+
             ToDo.saveToDos(toDos)
+            tableView.reloadData()   // reload whole table
         }
     }
 
@@ -105,19 +143,14 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate, UISearch
 
         if let toDo = sourceViewController.toDo {
             if let indexOfExistingToDo = toDos.firstIndex(of: toDo) {
-                // Update existing item
                 toDos[indexOfExistingToDo] = toDo
-                tableView.reloadRows(at: [IndexPath(row: indexOfExistingToDo, section: 0)], with: .automatic)
             } else {
-                // Add new item
-                let newIndexPath = IndexPath(row: toDos.count, section: 0)
                 toDos.append(toDo)
-                tableView.insertRows(at: [newIndexPath], with: .automatic)
             }
         }
         ToDo.saveToDos(toDos)
+        tableView.reloadData()   // reload whole table
     }
-
     /*
     // Override to support rearranging the table view.
     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {

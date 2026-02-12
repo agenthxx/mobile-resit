@@ -7,22 +7,30 @@
 
 import Foundation
 
+enum ToDoCategory: String, Codable, CaseIterable {
+    case work = "Work"
+    case personal = "Personal"
+    case errands = "Errands"
+}
+
 struct ToDo: Equatable,Codable {
     let id: UUID
     var title: String
     var isComplete: Bool
     var dueDate: Date
     var notes: String?
+    var category: ToDoCategory
     
     static let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     static let archiveURL = documentsDirectory.appendingPathComponent("toDos").appendingPathExtension("plist")
     
-    init(id: UUID = UUID(),title: String, isComplete: Bool, dueDate: Date, notes: String?) {
+    init(id: UUID = UUID(),title: String, isComplete: Bool, dueDate: Date, notes: String?, category: ToDoCategory) {
         self.id = id
         self.title = title
         self.isComplete = isComplete
         self.dueDate = dueDate
         self.notes = notes
+        self.category = category
     }
     static func == (lhs: ToDo, rhs: ToDo) -> Bool {
         return lhs.id == rhs.id
@@ -37,15 +45,27 @@ struct ToDo: Equatable,Codable {
     }
     
     static func loadSampleToDos() -> [ToDo] {
-        let toDo1 = ToDo(title: "To-Do One", isComplete: false,
-                         dueDate: Date(), notes: "Notes 1")
-        let toDo2 = ToDo(title: "To-Do Two", isComplete: false,
-                         dueDate: Date(), notes: "Notes 2")
-        let toDo3 = ToDo(title: "To-Do Three", isComplete: false,
-                         dueDate: Date(), notes: "Notes 3")
+        let toDo1 = ToDo(title: "Finish project report",
+                         isComplete: false,
+                         dueDate: Date().addingTimeInterval(3600 * 24),
+                         notes: "Summarize findings and email manager",
+                         category: .work)
+
+        let toDo2 = ToDo(title: "Buy groceries",
+                         isComplete: false,
+                         dueDate: Date().addingTimeInterval(3600 * 48),
+                         notes: "Milk, bread, eggs, fruit",
+                         category: .personal)
+
+        let toDo3 = ToDo(title: "Gym workout",
+                         isComplete: false,
+                         dueDate: Date(),
+                         notes: "Leg day completed",
+                         category: .errands)
+
         return [toDo1, toDo2, toDo3]
     }
-    
+
     static func saveToDos(_ toDos: [ToDo]) {
         let propertyListEncoder = PropertyListEncoder()
         let codedToDos = try? propertyListEncoder.encode(toDos)
