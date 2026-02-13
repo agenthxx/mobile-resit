@@ -43,3 +43,31 @@ A history screen displays previously completed quizzes and their results. Quiz o
 
 ### 5. Quiz Timer
 Each quiz question is timed, limiting how long the user has to answer. If the timer expires, the quiz automatically progresses, providing a more engaging and challenging experience.
+
+# ToDoList App
+
+## Overview
+A Swift-based ToDo list app built from Apple’s *Develop with Swift: Data Collections* guided project (pages 265–321). Extended with stretch goals for improved functionality.
+
+## Features
+- Add, edit, delete tasks
+- Save/load tasks with PropertyList
+- Detail view with title, completion, due date, and notes
+
+## Stretch Goals
+- Share function (Activity Controller)
+- Search field to filter tasks
+- Categories/tags (Work, Personal, Completed)
+- Due date highlighting (overdue/upcoming)
+- Reminder notifications with UNUserNotificationCenter
+
+## Prototype
+Designed in Figma with high-fidelity screens and interactions.  
+🔗 https://www.figma.com/design/Yd7EIWIlc8DsTnj17mppf0/To-Do-List?node-id=0-1&t=sRZNGSmSUcQOtUv0-1
+
+## Setup
+1. Clone the repo:
+
+2. Open in Xcode and run on simulator/device.
+
+3. Enable notifications to test reminders.
